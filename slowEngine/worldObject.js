@@ -1,5 +1,7 @@
-import Collider from "./collider.js";
+import Collider from "./physics/collider.js";
 import Line from "./geometry/line.js";
+import allObjects from "./physics/allObjects.js";
+
 const DEFAULT_OUTLINE_COLOR = "#000";
 
 
@@ -9,6 +11,7 @@ export default class WorldObject extends Collider {
         this.pos = pos;
         this.mass = 1;
         this.cornerOffsets = cornerOffsets;
+        allObjects.push(this);
     }
     drawOutline(engine, color=DEFAULT_OUTLINE_COLOR) {
         /** Draw the outline of the object */

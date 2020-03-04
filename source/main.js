@@ -1,7 +1,7 @@
 import WorldObject from "../slowEngine/worldObject.js";
 import Vector from "../slowEngine/geometry/vector.js"
-import Rect from "../slowEngine/geometry/rect.js";
-import Line from "../slowEngine/geometry/line.js";
+// import Rect from "../slowEngine/geometry/rect.js";
+// import Line from "../slowEngine/geometry/line.js";
 
 
 class Player extends WorldObject {
@@ -50,15 +50,28 @@ block.controls = {
     right: "ArrowRight",
 }
 
-export default function main(engine) {
+let groundWidth = 5
+let groundDepth = 1
+let ground = new WorldObject(new Vector(0, -3), [new Vector(-groundWidth, groundDepth), new Vector(groundWidth, groundDepth),
+    new Vector(groundWidth, -groundDepth), new Vector(-groundWidth, -groundDepth)]);
+ground.mass = Infinity;
+
+
+function update(engine) {
     // engine.camera.pixelsPerUnit = 200;
     // engine.camera.pos.y = 1;
-
     player.move(engine);
     block.move(engine);
+};
 
-    player.runCollision(engine, block);
 
+function show(engine) {
     player.draw(engine, "#a00");
     block.draw(engine);
-};
+    ground.draw(engine)
+}
+
+export {
+    update,
+    show,
+}

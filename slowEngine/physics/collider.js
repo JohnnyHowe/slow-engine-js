@@ -1,6 +1,6 @@
 // import collisionFixer from "./collisionFixer.js";
-import Vector from "./geometry/vector.js";
-import Line from "./geometry/line.js";
+import Vector from "../geometry/vector.js";
+import Line from "../geometry/line.js";
 // import Rect from "../geometry/rect.js";
 
 
@@ -10,24 +10,36 @@ export default class Collider {
         this.cornerOffsets = [new Vector(0, 0)]; 
     }
 
-    runCollision(engine, other) {
-        let collisionLine = this._getCollisionLine(engine, other);
-        // engine.drawer.drawGameLine(new Line(other.pos, other.pos.plus(collisionAngle)), "#000", 0.04);
-
-        let totalMass = this.mass + other.mass;
-        let thisMult = this.mass / totalMass;
-        let otherMult = other.mass / totalMass;
-
-        console.log(thisMult)
-
-        this.pos.x += collisionLine.x * thisMult;
-        this.pos.y += collisionLine.y * thisMult;
-
-        other.pos.x -= collisionLine.x * otherMult;
-        other.pos.y -= collisionLine.y * otherMult;
+    runCollision(other) {
+        let collisionLine = this._getCollisionLine(other);
+        let thisMult;
+        let otherMult;
+        if (other.mass.toString() == "Infinity" && this.mass.toString() == "Infinity") {
+            console.log("WARNING TWO INFINITE MASS OBJECTS COLLIDED");
+            thisMult = 0;
+            otherMult = 0;
+        } else if (other.mass == Infinity) {
+            thisMult = 1;
+            otherMult = 0;
+        } else if (this.mass == Infinity) {
+            thisMult = 0;
+            otherMult = 1;
+        } else {
+            let totalMass = this.mass + other.mass;
+            thisMult = this.mass / totalMass;
+            otherMult = other.mass / totalMass;
+        }
+        if (thisMult != 0) {
+            this.pos.x += collisionLine.x * thisMult;
+            this.pos.y += collisionLine.y * thisMult;
+        }
+        if (otherMult != 0) {
+            other.pos.x -= collisionLine.x * otherMult;
+            other.pos.y -= collisionLine.y * otherMult;
+        }
     }
 
-    _getCollisionLine(engine, other) {
+    _getCollisionLine(other) {
         let minOverlap;
         let minAxis;
         let isOverlapped = true;
