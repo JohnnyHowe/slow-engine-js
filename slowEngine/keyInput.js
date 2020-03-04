@@ -1,5 +1,5 @@
 
-export default class KeyHandler {
+export default class KeyInput {
     constructor() {
         this.keyState = new Map();
 
@@ -11,6 +11,7 @@ export default class KeyHandler {
         });
     }
     isPressed(key) {
+        /** Return whether the current key is pressed. */
         return !!this.keyState.get(key);
     }
 }

@@ -1,4 +1,3 @@
-// import Pos from "./pos.js";
 
 
 export default class Rect {

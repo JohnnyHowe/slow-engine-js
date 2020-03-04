@@ -11,6 +11,7 @@ export default class Clock {
         this.lastFrameTime = currentTime;
     }
     getdtime() {
+        /** Returns the time between the current and previous frame in milliseconds. */
         return this.dtime;
     }
 }

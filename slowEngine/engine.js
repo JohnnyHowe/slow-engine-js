@@ -1,8 +1,8 @@
 import Window from "./window.js";
 import Camera from "./camera.js";
 import Clock from "./clock.js";
-import KeyHandler from "./keyInputHandler.js";
-import Draw from "./draw.js";
+import KeyInput from "./keyInput.js";
+import Drawer from "./drawer.js";
 
 
 export default class Engine {
@@ -10,8 +10,8 @@ export default class Engine {
         this.window = new Window();
         this.camera = new Camera();
         this.clock = new Clock();
-        this.keys = new KeyHandler();
-        this.draw = new Draw(this);
+        this.keyInput = new KeyInput();
+        this.drawer = new Drawer(this);
     }
     update() {
         this.clock.update();

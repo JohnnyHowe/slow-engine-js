@@ -1,14 +1,14 @@
 import WorldObject from "../slowEngine/worldObject.js";
-import Pos from "../slowEngine/geometry/pos.js"
+import Vector from "../slowEngine/geometry/vector.js"
 import Rect from "../slowEngine/geometry/rect.js";
 import Line from "../slowEngine/geometry/line.js";
 
 
 class Player extends WorldObject {
     constructor() {
-        // super(new Pos(-2, 0), [new Pos(-1, 1), new Pos(1, 1), new Pos(1, -1), new Pos(-1, -1)]);
-        super(new Pos(-3, 0), [new Pos(-0.5, 1), new Pos(1, 1), new Pos(1.5, 0), new Pos(1, -1), new Pos(-1, -1)]);
-        // super(new Pos(0, 3), [new Pos(0, 1), new Pos(1, 0), new Pos(0, -1), new Pos(-1, 0)])
+        // super(new Vector(-2, 0), [new Vector(-1, 1), new Vector(1, 1), new Vector(1, -1), new Vector(-1, -1)]);
+        // super(new Vector(-3, 0), [new Vector(-0.5, 1), new Vector(1, 1), new Vector(1.5, 0), new Vector(1, -1), new Vector(-1, -1)]);
+        super(new Vector(0, 3), [new Vector(0, 1), new Vector(1, 0), new Vector(0, -1), new Vector(-1, 0)])
         this.controls = {
             left: "a",
             right: "d",
@@ -18,16 +18,16 @@ class Player extends WorldObject {
     }
     move(engine) {
         let speed = engine.clock.getdtime() * 2;
-        if (engine.keys.isPressed(this.controls.up)) {
+        if (engine.keyInput.isPressed(this.controls.up)) {
             this.pos.y += speed;
         }
-        if (engine.keys.isPressed(this.controls.down)) {
+        if (engine.keyInput.isPressed(this.controls.down)) {
             this.pos.y -= speed;
         }
-        if (engine.keys.isPressed(this.controls.left)) {
+        if (engine.keyInput.isPressed(this.controls.left)) {
             this.pos.x -= speed;
         }
-        if (engine.keys.isPressed(this.controls.right)) {
+        if (engine.keyInput.isPressed(this.controls.right)) {
             this.pos.x += speed;
         }
     }
@@ -38,10 +38,10 @@ let squareSize = 0.5;
 let player = new Player();
 
 let block = new Player();
-block.pos = new Pos(0, 0);
-block.corners = [
-    new Pos(-squareSize, squareSize), new Pos(squareSize, squareSize),
-    new Pos(squareSize, -squareSize), new Pos(-squareSize, -squareSize)
+block.pos = new Vector(0, 0);
+block.cornerOffsets = [
+    new Vector(-squareSize, squareSize), new Vector(squareSize, squareSize),
+    new Vector(squareSize, -squareSize), new Vector(-squareSize, -squareSize)
 ];
 block.controls = {
     up: "ArrowUp",

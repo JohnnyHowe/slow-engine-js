@@ -1,23 +1,22 @@
-import Pos from "./geometry/pos.js";
+import Vector from "./geometry/vector.js";
 import Line from "./geometry/line.js";
 
 
-export default class Draw {
+export default class Drawer {
     constructor(parentEngine) {
         this._parentEngine = parentEngine;
     }
-    getWindowPos(pos) {
+    getWindowPos(gamePos) {
+        /** Return the window position (Vector) of gamePos (Vector). */
         let window = this._parentEngine.window;
         let camera = this._parentEngine.camera;
-        return new Pos(
-            window.size.w / 2 + (pos.x - camera.pos.x) * camera.pixelsPerUnit,
-            window.size.h / 2 + (-pos.y + camera.pos.y) * camera.pixelsPerUnit,
+        return new Vector(
+            window.size.w / 2 + (gamePos.x - camera.pos.x) * camera.pixelsPerUnit,
+            window.size.h / 2 + (-gamePos.y + camera.pos.y) * camera.pixelsPerUnit,
         )
     }
     getWindowRect(gameRect) {
-        /**
-         * Given a rect in game units, return the corresponding rect measured in pixels.
-         */
+        /** Return the window rect (Rector) of gameRect (Rect). */
         let window = this._parentEngine.window;
         let camera = this._parentEngine.camera;
         return {
@@ -28,14 +27,16 @@ export default class Draw {
         }
     }
     drawWindowRect(rect, color) {
+        /** Draw a rect on the screen in the pixel position of rect */
         this._parentEngine.window.context.fillStyle = color;
         this._parentEngine.window.context.fillRect(rect.x, rect.y, rect.w, rect.h);
     }
     drawGameRect(rect, color) {
+        /** Draw a rect on the screen in the game position of rect */
         this.drawWindowRect(this.getWindowRect(rect), color);
     }
     drawWindowLine(line, color, lineWidth) {
-        // console.log(line)
+        /** Draw a line on the screen in the pixel position of line */
         this._parentEngine.window.context.lineWidth = lineWidth;
         this._parentEngine.window.context.strokeStyle = color;
         this._parentEngine.window.context.beginPath();
@@ -44,6 +45,7 @@ export default class Draw {
         this._parentEngine.window.context.stroke();
     }
     drawGameLine(line, color, lineWidth) {
+        /** Draw a line on the screen in the game position of line */
         let camera = this._parentEngine.camera;
         let scaledLine = new Line(this.getWindowPos(line.start), this.getWindowPos(line.end));
         this.drawWindowLine(scaledLine, color, lineWidth * camera.pixelsPerUnit);
