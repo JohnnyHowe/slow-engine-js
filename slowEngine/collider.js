@@ -13,8 +13,18 @@ export default class Collider {
     runCollision(engine, other) {
         let collisionLine = this._getCollisionLine(engine, other);
         // engine.drawer.drawGameLine(new Line(other.pos, other.pos.plus(collisionAngle)), "#000", 0.04);
-        this.pos.x += collisionLine.x;
-        this.pos.y += collisionLine.y;
+
+        let totalMass = this.mass + other.mass;
+        let thisMult = this.mass / totalMass;
+        let otherMult = other.mass / totalMass;
+
+        console.log(thisMult)
+
+        this.pos.x += collisionLine.x * thisMult;
+        this.pos.y += collisionLine.y * thisMult;
+
+        other.pos.x -= collisionLine.x * otherMult;
+        other.pos.y -= collisionLine.y * otherMult;
     }
 
     _getCollisionLine(engine, other) {

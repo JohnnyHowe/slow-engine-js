@@ -7,6 +7,7 @@ export default class WorldObject extends Collider {
     constructor(pos, cornerOffsets) {
         super();
         this.pos = pos;
+        this.mass = 1;
         this.cornerOffsets = cornerOffsets;
     }
     drawOutline(engine, color=DEFAULT_OUTLINE_COLOR) {
