@@ -20,7 +20,7 @@ block.controls = {
     left: "ArrowLeft",
     right: "ArrowRight",
 }
-block.mass = 2;
+block.mass = 5;
 
 let groundWidth = 5
 let groundDepth = 1

@@ -44,8 +44,10 @@ export default class SATCollider {
             let velocityChange = totalMomentum.divided(totalMass).divided(engine.clock.getdtime());
 
             // Fix positioning (no overlap of objects)
-            this.pos = this.pos.plus(totalMomentum.multiplied(0.5 * this.mass / totalMass));
-            other.pos = other.pos.minus(totalMomentum.multiplied(0.5 * other.mass / totalMass));
+            let thisChange = collisionVector.multiplied(other.mass / totalMass);
+            let otherChange = collisionVector.multiplied(this.mass / totalMass);
+            this.pos = this.pos.plus(thisChange);
+            other.pos = other.pos.minus(otherChange);
 
             // Apply bounce/make collision elastic
             let thisVelocityChange = velocityChange.multiplied(other.mass / totalMass);
