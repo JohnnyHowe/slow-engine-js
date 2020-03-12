@@ -1,6 +1,6 @@
-import Collider from "./physics/collider.js";
+import Collider from "./SATcollider.js";
 import Line from "./geometry/line.js";
-import allObjects from "./physics/allObjects.js";
+import Vector from "./geometry/vector.js";
 
 const DEFAULT_OUTLINE_COLOR = "#000";
 
@@ -9,9 +9,9 @@ export default class WorldObject extends Collider {
     constructor(pos, cornerOffsets) {
         super();
         this.pos = pos;
+        this.velocity = new Vector(0, 0);
         this.mass = 1;
         this.cornerOffsets = cornerOffsets;
-        allObjects.push(this);
     }
     drawOutline(engine, color=DEFAULT_OUTLINE_COLOR) {
         /** Draw the outline of the object */
@@ -41,5 +41,9 @@ export default class WorldObject extends Collider {
             lines.push(new Line(start, end));
         }
         return lines;
+    }
+    capVelocity(maxVelocity) {
+        this.velocity.x = Math.min(Math.max(-maxVelocity.x, this.velocity.x), maxVelocity.x);
+        this.velocity.y = Math.min(Math.max(-maxVelocity.y, this.velocity.y), maxVelocity.y);
     }
 }

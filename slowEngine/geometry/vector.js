@@ -38,6 +38,9 @@ export default class Vector {
         let projLen = (vector.getDotProduct(this) / vector.getOriginLength() ** 2);
         return new Vector(vector.x * projLen, vector.y * projLen);
     }
+    getNormal() {
+        return new Vector(this.y, -this.x)
+    }
 
     // Position math
     plus(pos) {

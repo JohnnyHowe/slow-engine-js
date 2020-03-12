@@ -1,42 +1,67 @@
-// import collisionFixer from "./collisionFixer.js";
-import Vector from "../geometry/vector.js";
-import Line from "../geometry/line.js";
-// import Rect from "../geometry/rect.js";
+import Vector from "./geometry/vector.js";
+import Line from "./geometry/line.js";
+
+/** SAT COLLIDER 
+ * VERY MUCH UNFINISHED
+ * I AM TOO LAZY TO GET MOMENTUM IN SO AM GOING TO BOX COLLISION FOR A WHILE.
+ */
 
 
-export default class Collider {
+export default class SATCollider {
     constructor() {
         this.pos = new Vector(0, 0);
+        this.velocity = new Vector(0, 0);
         this.cornerOffsets = [new Vector(0, 0)]; 
     }
 
-    runCollision(other) {
-        let collisionLine = this._getCollisionLine(other);
-        let thisMult;
-        let otherMult;
-        if (other.mass.toString() == "Infinity" && this.mass.toString() == "Infinity") {
-            console.log("WARNING TWO INFINITE MASS OBJECTS COLLIDED");
-            thisMult = 0;
-            otherMult = 0;
-        } else if (other.mass == Infinity) {
-            thisMult = 1;
-            otherMult = 0;
-        } else if (this.mass == Infinity) {
-            thisMult = 0;
-            otherMult = 1;
-        } else {
-            let totalMass = this.mass + other.mass;
-            thisMult = this.mass / totalMass;
-            otherMult = other.mass / totalMass;
+    capVelocity(maxVelocity) {
+        this.velocity.x = Math.min(Math.max(-maxVelocity.x, this.velocity.x), maxVelocity.x);
+        this.velocity.y = Math.min(Math.max(-maxVelocity.y, this.velocity.y), maxVelocity.y);
+    }
+
+    runCollisions(objects, engine) {
+        /** If this has collided with objects, fix them all.
+         * This does not run collisions between the objects in the objects list.
+         */
+        // console.log(this.velocity)
+        for (let object of objects) {
+            this._runCollision(object, engine);
         }
-        if (thisMult != 0) {
-            this.pos.x += collisionLine.x * thisMult;
-            this.pos.y += collisionLine.y * thisMult;
+    }
+
+    _runCollision(other, engine) {
+        /** If this and other are collided, fix it and return true, otherwise return false.  */
+        let collisionVector = this._getCollisionLine(other);
+        if (!(collisionVector.x == 0 && collisionVector.y == 0)) {
+
+            // let thisMomentum = this.velocity.multiplied(this.mass);
+            // let otherMomentum = other.velocity.multiplied(other.mass);
+            // let totalMomentum = thisMomentum.plus(other);
+
+            // Momentum in direction of collision
+            let thisMomentum = collisionVector.multiplied(this.mass);
+            let otherMomentum = collisionVector.multiplied(other.mass);
+            let totalMomentum = thisMomentum.plus(otherMomentum);
+            let velocityChange = totalMomentum.divided(this.mass + other.mass).divided(engine.clock.getdtime());
+
+            this.pos = this.pos.plus(totalMomentum.divided(this.mass));
+            other.pos = other.pos.minus(totalMomentum.divided(other.mass));
+
+            this.velocity = this.velocity.plus(velocityChange);
+            other.velocity = other.velocity.minus(velocityChange);
+            // this.velocity = this.velocity.plus(thisMomentum.divided(this.mass).divided(engine.clock.getdtime()));
+            // other.velocity = other.velocity.minus(otherMomentum.divided(other.mass).divided(engine.clock.getdtime()));
+
+            // this.pos = this.pos.plus(collisionVector);
+            // this.velocity = this.velocity.plus(collisionVector.divided(engine.clock.getdtime()));
         }
-        if (otherMult != 0) {
-            other.pos.x -= collisionLine.x * otherMult;
-            other.pos.y -= collisionLine.y * otherMult;
-        }
+    }
+
+    _getSpeedInDir(axis) {
+        /** Return the speed of this in the direction of axis.
+         * Found by the projection of the velocity vector onto axis.
+        */
+       return this.velocity.getProjectionOnto(axis);
     }
 
     _getCollisionLine(other) {
