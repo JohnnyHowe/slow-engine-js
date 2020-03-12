@@ -34,26 +34,19 @@ export default class SATCollider {
         let collisionVector = this._getCollisionLine(other);
         if (!(collisionVector.x == 0 && collisionVector.y == 0)) {
 
-            // let thisMomentum = this.velocity.multiplied(this.mass);
-            // let otherMomentum = other.velocity.multiplied(other.mass);
-            // let totalMomentum = thisMomentum.plus(other);
-
             // Momentum in direction of collision
             let thisMomentum = collisionVector.multiplied(this.mass);
             let otherMomentum = collisionVector.multiplied(other.mass);
             let totalMomentum = thisMomentum.plus(otherMomentum);
-            let velocityChange = totalMomentum.divided(this.mass + other.mass).divided(engine.clock.getdtime());
 
-            this.pos = this.pos.plus(totalMomentum.divided(this.mass));
-            other.pos = other.pos.minus(totalMomentum.divided(other.mass));
+            let totalMass = this.mass + other.mass;
+            let velocityChange = totalMomentum.divided(totalMass).divided(engine.clock.getdtime());
 
-            this.velocity = this.velocity.plus(velocityChange);
-            other.velocity = other.velocity.minus(velocityChange);
-            // this.velocity = this.velocity.plus(thisMomentum.divided(this.mass).divided(engine.clock.getdtime()));
-            // other.velocity = other.velocity.minus(otherMomentum.divided(other.mass).divided(engine.clock.getdtime()));
+            this.pos = this.pos.plus(totalMomentum.multiplied(0.5 * this.mass / totalMass));
+            other.pos = other.pos.minus(totalMomentum.multiplied(0.5 * other.mass / totalMass));
 
-            // this.pos = this.pos.plus(collisionVector);
-            // this.velocity = this.velocity.plus(collisionVector.divided(engine.clock.getdtime()));
+            this.velocity = this.velocity.plus(velocityChange.multiplied(this.mass / totalMass));
+            other.velocity = other.velocity.minus(velocityChange.multiplied(other.mass / totalMass));
         }
     }
 
