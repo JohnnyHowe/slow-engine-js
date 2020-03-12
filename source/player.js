@@ -15,6 +15,7 @@ export default class Player extends WorldObject {
         };
         this.acceleration = 5;
         this.deceleration = this.acceleration;
+        this.bounce = 1;
     }
     move(engine) {
         let change = new Vector(0, 0);

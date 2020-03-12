@@ -12,6 +12,7 @@ export default class WorldObject extends Collider {
         this.velocity = new Vector(0, 0);
         this.mass = 1;
         this.cornerOffsets = cornerOffsets;
+        this.bounce = 0;
     }
     drawOutline(engine, color=DEFAULT_OUTLINE_COLOR) {
         /** Draw the outline of the object */

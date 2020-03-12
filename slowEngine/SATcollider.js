@@ -12,6 +12,7 @@ export default class SATCollider {
         this.pos = new Vector(0, 0);
         this.velocity = new Vector(0, 0);
         this.cornerOffsets = [new Vector(0, 0)]; 
+        this.bounce = 0;
     }
 
     capVelocity(maxVelocity) {
@@ -42,11 +43,26 @@ export default class SATCollider {
             let totalMass = this.mass + other.mass;
             let velocityChange = totalMomentum.divided(totalMass).divided(engine.clock.getdtime());
 
+            // Fix positioning (no overlap of objects)
             this.pos = this.pos.plus(totalMomentum.multiplied(0.5 * this.mass / totalMass));
             other.pos = other.pos.minus(totalMomentum.multiplied(0.5 * other.mass / totalMass));
 
-            this.velocity = this.velocity.plus(velocityChange.multiplied(this.mass / totalMass));
-            other.velocity = other.velocity.minus(velocityChange.multiplied(other.mass / totalMass));
+            // Apply bounce/make collision elastic
+            let thisVelocityChange = velocityChange.multiplied(other.mass / totalMass);
+            let otherVelocityChange = velocityChange.multiplied(this.mass / totalMass);
+
+            let totalBounce;
+            if (this.bounce <= 0 || other.bounce <= 0) {
+                // If an object has negative bounce, it should "absorb" the bounce of the other.
+                totalBounce = Math.max(0, this.bounce + other.bounce);
+            } else {
+                totalBounce = Math.max(this.bounce, other.bounce)
+            }
+            thisVelocityChange = thisVelocityChange.plus(thisVelocityChange.multiplied(totalBounce));
+            otherVelocityChange = otherVelocityChange.plus(otherVelocityChange.multiplied(totalBounce));
+
+            this.velocity = this.velocity.plus(thisVelocityChange);
+            other.velocity = other.velocity.minus(otherVelocityChange);
         }
     }
 
