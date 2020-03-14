@@ -33,20 +33,15 @@ function update(engine) {
     player.move(engine);
     block.move(engine);
 
-    // let maxVelocity = (new Vector(1, 1)).multiplied(0.5);
-    // player.capVelocity(maxVelocity);
-    // block.capVelocity(maxVelocity);
-
-    player.runCollisions([block], engine)
-    // player.runCollisions([ground, block]);
-    // block.runCollisions([ground]);
+    player.runCollisions(engine, [ground, block]);
+    block.runCollisions(engine, [ground]);
 };
 
 
 function show(engine) {
     player.draw(engine, "#a00");
     block.draw(engine);
-    // ground.draw(engine)
+    ground.draw(engine)
 }
 
 export default function main(engine) {

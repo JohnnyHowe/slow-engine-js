@@ -20,52 +20,87 @@ export default class SATCollider {
         this.velocity.y = Math.min(Math.max(-maxVelocity.y, this.velocity.y), maxVelocity.y);
     }
 
-    runCollisions(objects, engine) {
+    runCollisions(engine, objects) {
         /** If this has collided with objects, fix them all.
          * This does not run collisions between the objects in the objects list.
          */
-        // console.log(this.velocity)
         for (let object of objects) {
-            this._runCollision(object, engine);
+            this._runCollision(engine, object);
         }
     }
 
-    _runCollision(other, engine) {
+    _runCollision(engine, other) {
         /** If this and other are collided, fix it and return true, otherwise return false.  */
         let collisionVector = this._getCollisionLine(other);
         if (!(collisionVector.x == 0 && collisionVector.y == 0)) {
-
-            // Momentum in direction of collision
-            let thisMomentum = collisionVector.multiplied(this.mass);
-            let otherMomentum = collisionVector.multiplied(other.mass);
-            let totalMomentum = thisMomentum.plus(otherMomentum);
-
-            let totalMass = this.mass + other.mass;
-            let velocityChange = totalMomentum.divided(totalMass).divided(engine.clock.getdtime());
-
-            // Fix positioning (no overlap of objects)
-            let thisChange = collisionVector.multiplied(other.mass / totalMass);
-            let otherChange = collisionVector.multiplied(this.mass / totalMass);
-            this.pos = this.pos.plus(thisChange);
-            other.pos = other.pos.minus(otherChange);
-
-            // Apply bounce/make collision elastic
-            let thisVelocityChange = velocityChange.multiplied(other.mass / totalMass);
-            let otherVelocityChange = velocityChange.multiplied(this.mass / totalMass);
-
-            let totalBounce;
-            if (this.bounce <= 0 || other.bounce <= 0) {
-                // If an object has negative bounce, it should "absorb" the bounce of the other.
-                totalBounce = Math.max(0, this.bounce + other.bounce);
+            if (this._isMassReal() && other._isMassReal()) {
+                this._runRealCollision(engine, other, collisionVector);
             } else {
-                totalBounce = Math.max(this.bounce, other.bounce)
+                this._runNonRealCollision(engine, other, collisionVector);
             }
-            thisVelocityChange = thisVelocityChange.plus(thisVelocityChange.multiplied(totalBounce));
-            otherVelocityChange = otherVelocityChange.plus(otherVelocityChange.multiplied(totalBounce));
-
-            this.velocity = this.velocity.plus(thisVelocityChange);
-            other.velocity = other.velocity.minus(otherVelocityChange);
         }
+    }
+
+    _isMassReal() {
+        /** Is this.mass real? (non zero and non-infinite) DOES ALLOW NEGATIVES */
+        return this.mass != 0 && this.mass != Infinity;
+    }
+
+    _runNonRealCollision(engine, other, collisionVector) {
+        /** Run the collision between this and other where one has a non-real mass (positive, non-infinite). */
+        if (!this._isMassReal() && !other._isMassReal()) {
+            // Big booty hoes v1
+        } else if (!this._isMassReal()) {
+            other._runNonRealCollision(engine, this, collisionVector.multiplied(-1));
+        } else if (!other._isMassReal()) {
+            this.pos = this.pos.plus(collisionVector);
+
+            let totalBounce = this._getBounce(other);
+            let velocityChange = collisionVector.divided(engine.clock.getdtime());
+            velocityChange = velocityChange.multiplied(1 + totalBounce);
+            this.velocity.offsetBy(velocityChange);
+        }
+    }
+
+    _getBounce(other) {
+        let totalBounce;
+        if (this.bounce <= 0 || other.bounce <= 0) {
+            // If an object has negative bounce, it should "absorb" the bounce of the other.
+            totalBounce = Math.max(0, this.bounce + other.bounce);
+        } else {
+            totalBounce = Math.max(this.bounce, other.bounce)
+        }
+        return totalBounce;
+    }
+
+    _runRealCollision(engine, other, collisionVector) {
+        /** Run the collision between this and other where both have real masses (positive, non-infinite). */
+        // Momentum in direction of collision
+        let thisMomentum = collisionVector.multiplied(this.mass);
+        let otherMomentum = collisionVector.multiplied(other.mass);
+        let totalMomentum = thisMomentum.plus(otherMomentum).divided(engine.clock.getdtime());
+        let totalMass = this.mass + other.mass;
+
+        // Apply bounce/make collision elastic
+        let thisMomentumChange = totalMomentum.multiplied(other.mass / totalMass);
+        let otherMomentumChange = totalMomentum.multiplied(this.mass / totalMass);
+
+        let totalBounce = this._getBounce(other);
+
+        let thisVelocityChange = thisMomentumChange.divided(totalMass);
+        let otherVelocityChange = otherMomentumChange.divided(totalMass);
+
+        thisVelocityChange.offsetBy(thisVelocityChange.multiplied(totalBounce));
+        otherVelocityChange.offsetBy(otherVelocityChange.multiplied(totalBounce));
+
+        this.velocity = this.velocity.plus(thisVelocityChange);
+        other.velocity = other.velocity.minus(otherVelocityChange);
+
+        // Fix positioning (no overlap of objects)
+        let thisChange = collisionVector.multiplied(other.mass / totalMass);
+        let otherChange = collisionVector.multiplied(this.mass / totalMass);
+        this.pos = this.pos.plus(thisChange);
+        other.pos = other.pos.minus(otherChange);
     }
 
     _getSpeedInDir(axis) {
