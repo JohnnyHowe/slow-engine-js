@@ -7,7 +7,7 @@ import Drawer from "./drawer.js";
 
 export default class Engine {
     constructor() {
-        this.window = new Window();
+        this.window = new Window(this);
         this.camera = new Camera();
         this.clock = new Clock();
         this.keyInput = new KeyInput();
@@ -29,7 +29,7 @@ export default class Engine {
                 this.clock._dtimeMult += this.clock._dtimeMult * this.clock.rawdtime;
                 console.log("Delta time multiplier = " + this.clock._dtimeMult);
             }
-            if (this.keyInput.isPressed(" ")) {
+            if (this.keyInput.isPressed("3")) {
                 this.clock._dtimeMult = 0.1;
                 console.log("Delta time multiplier = " + this.clock._dtimeMult);
             }

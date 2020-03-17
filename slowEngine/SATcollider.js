@@ -23,10 +23,16 @@ export default class SATCollider {
     runCollisions(engine, objects) {
         /** If this has collided with objects, fix them all.
          * This does not run collisions between the objects in the objects list.
+         * Returns the collision vectors.
          */
+        let vectors = [];
         for (let object of objects) {
-            this._runCollision(engine, object);
+            let vector = this._runCollision(engine, object);
+            if (vector.x != 0 || vector.y != 0) {
+                vectors.push(vector);
+            }
         }
+        return vectors;
     }
 
     _runCollision(engine, other) {
@@ -39,6 +45,7 @@ export default class SATCollider {
                 this._runNonRealCollision(engine, other, collisionVector);
             }
         }
+        return collisionVector;
     }
 
     _isMassReal() {

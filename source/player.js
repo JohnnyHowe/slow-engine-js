@@ -1,37 +1,89 @@
 import WorldObject from "../slowEngine/worldObject.js";
-import Vector from "../slowEngine/geometry/vector.js"
+import Vector from "../slowEngine/geometry/vector.js";
+
+import {CHUNKSIZE} from "./chunkHandler.js";
 
 
-export default class Player extends WorldObject {
+export default class player extends WorldObject {
+
     constructor() {
-        // super(new Vector(0, 3), [new Vector(-1, 1), new Vector(1, 1), new Vector(1, -1), new Vector(-1, -1)]);
-        super(new Vector(-3, 0), [new Vector(-0.5, 1), new Vector(1, 1), new Vector(1.5, 0), new Vector(1, -1), new Vector(-1, -1)]);
-        // super(new Vector(0, 3), [new Vector(0, 1), new Vector(1, 0), new Vector(0, -1), new Vector(-1, 0)])
+        super();
+        this.jumpPower = 6;
+        this.acceleration = 40;
+        this.maxRunSpeed = 10;
         this.controls = {
-            left: "a",
-            right: "d",
-            up: "w",
-            down: "s",
-        };
-        this.acceleration = 5;
-        this.deceleration = this.acceleration;
-        this.bounce = 1;
+            "LEFT": "a",
+            "RIGHT": "d",
+            "JUMP": " ",
+        }
+        this.cornerOffsets = [new Vector(-0.5, 1), new Vector(0.5, 1), new Vector(0.5, -1), new Vector(-0.5, -1)];
+        this.pos = new Vector(0, -1);
+        this.collisionVectors = [];
     }
-    move(engine) {
+
+    update(engine) {
+        this.runInput(engine);
+        this.jumpInput(engine);
+        this.applyVelocity(engine);
+        this.applyGravity(engine);
+    }
+
+    applyVelocity(engine) {
+        this.pos.offsetBy(this.velocity.multiplied(engine.clock.getdtime()));
+    }
+
+    capRunSpeed() {
+        this.velocity.x = Math.min(this.maxRunSpeed, Math.max(-this.maxRunSpeed, this.velocity.x));
+    }
+
+    getCurrentChunkPos() {
+        let offset = new Vector(CHUNKSIZE / 2, CHUNKSIZE / 2);
+        let thisPos = this.getPos().plus(offset);
+        let pos = new Vector(
+            Math.floor(thisPos.x / CHUNKSIZE),
+            Math.floor(thisPos.y / CHUNKSIZE),
+        )
+        return pos;
+    }
+
+    isOnGround() {
+        for (let vector of this.collisionVectors) {
+            if (vector.y > 0) {
+                return true;
+            }
+        }
+    }
+
+    applyGravity(engine) {
+        this.velocity.y -= 9.8 * engine.clock.getdtime();
+    }
+
+    jumpInput(engine) {
+        if (engine.keyInput.isPressed(this.controls["JUMP"]) && this.isOnGround()) {
+            this.velocity.y = this.jumpPower;
+        }
+    }
+
+    runInput(engine) {
         let change = new Vector(0, 0);
-        if (engine.keyInput.isPressed(this.controls.up)) {
-            change.y += this.acceleration;
+        if (engine.keyInput.isPressed(this.controls["LEFT"])) {
+            change.x -= 1;
         }
-        if (engine.keyInput.isPressed(this.controls.down)) {
-            change.y -= this.acceleration;
+        if (engine.keyInput.isPressed(this.controls["RIGHT"])) {
+            change.x += 1;
         }
-        if (engine.keyInput.isPressed(this.controls.left)) {
-            change.x -= this.acceleration;
+        if (change.x == 0 && this.isOnGround()) {
+            this.slowDown(engine)
         }
-        if (engine.keyInput.isPressed(this.controls.right)) {
-            change.x += this.acceleration;
+        this.velocity.offsetBy(change.multiplied(engine.clock.getdtime() * this.acceleration));
+        this.capRunSpeed()
+    }
+
+    slowDown(engine) {
+        let initialSign = Math.sign(this.velocity.x)
+        this.velocity.x -= this.acceleration * initialSign * engine.clock.getdtime();
+        if (initialSign != Math.sign(this.velocity.x)) {
+            this.velocity.x = 0;
         }
-        this.velocity.offsetBy(change.multiplied(engine.clock.getdtime()));
-        this.pos.offsetBy(this.velocity.multiplied(engine.clock.getdtime()))
     }
 }

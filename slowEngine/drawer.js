@@ -5,14 +5,17 @@ import Line from "./geometry/line.js";
 export default class Drawer {
     constructor(parentEngine) {
         this._parentEngine = parentEngine;
+        this.window = this._parentEngine.window;
+        this.camera = this._parentEngine.camera;
+        this.context = this.window.context;
     }
     getWindowPos(gamePos) {
         /** Return the window position (Vector) of gamePos (Vector). */
         let window = this._parentEngine.window;
         let camera = this._parentEngine.camera;
         return new Vector(
-            window.size.w / 2 + (gamePos.x - camera.pos.x) * camera.pixelsPerUnit,
-            window.size.h / 2 + (-gamePos.y + camera.pos.y) * camera.pixelsPerUnit,
+            window.size.x / 2 + (gamePos.x - camera.pos.x) * camera.pixelsPerUnit,
+            window.size.y / 2 + (-gamePos.y + camera.pos.y) * camera.pixelsPerUnit,
         )
     }
     getWindowRect(gameRect) {
@@ -20,8 +23,8 @@ export default class Drawer {
         let window = this._parentEngine.window;
         let camera = this._parentEngine.camera;
         return {
-            x: window.size.w / 2 + (gameRect.x - gameRect.w / 2 - camera.pos.x) * camera.pixelsPerUnit,
-            y: window.size.h / 2 + (-gameRect.y - gameRect.h / 2 - camera.pos.y) * camera.pixelsPerUnit,
+            x: window.size.x / 2 + (gameRect.x - gameRect.w / 2 - camera.pos.x) * camera.pixelsPerUnit,
+            y: window.size.y / 2 + (-gameRect.y - gameRect.h / 2 - camera.pos.y) * camera.pixelsPerUnit,
             w: gameRect.w * camera.pixelsPerUnit,
             h: gameRect.h * camera.pixelsPerUnit,
         }
@@ -49,5 +52,14 @@ export default class Drawer {
         let camera = this._parentEngine.camera;
         let scaledLine = new Line(this.getWindowPos(line.start), this.getWindowPos(line.end));
         this.drawWindowLine(scaledLine, color, lineWidth * camera.pixelsPerUnit);
+    }
+    drawWindowCircle(pos, color, radius) {
+        this._parentEngine.window.context.fillStyle = color;
+        this.context.beginPath();
+        this.context.arc(pos.x, pos.y, radius, 0, 2 * Math.PI);
+        this.context.stroke();
+    }
+    drawGameCircle(pos, color, radius) {
+        this.drawWindowCircle(this.getWindowPos(pos), color, radius * this.camera.pixelsPerUnit * radius);
     }
 }

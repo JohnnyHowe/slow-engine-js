@@ -20,6 +20,10 @@ export default class Vector {
         this.y += pos.y;
     }
 
+    toString() {
+        return "Vector(" + this.x.toString() + ", " + this.y.toString() + ")";
+        }
+
     // Vector math
     getUnit() {
         let size = Math.sqrt(this.x ** 2 + this.y ** 2);
