@@ -7,7 +7,7 @@ export default class Block extends WorldObject {
         super();
         this.pos = pos;
         this.cornerOffsets = [new Vector(0.5, 0.5), new Vector(0.5, -0.5), new Vector(-0.5, -0.5), new Vector(-0.5, 0.5)];
-        this.mass = Infinity;
+        this.mass = 0.2;
     }
 }
 

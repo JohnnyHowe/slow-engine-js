@@ -54,7 +54,7 @@ function playerBlockCollisions(engine, player, chunkHandler) {
 // Called once as program starts.
 function setUp(engine) {
     // engine.camera.pos.y = CHUNKSIZE;
-    engine.camera.pixelsPerUnit = 30;
+    engine.camera.pixelsPerUnit = 50;
 }
 
 
