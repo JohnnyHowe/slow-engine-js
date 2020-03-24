@@ -1,66 +1,29 @@
 
+
+/**
+ * Class to represent vector
+ */
 export default class Vector {
+    // default attributes
+    x = 0;
+    y = 0;
+
     constructor(x, y) {
         this.x = x;
         this.y = y;
     }
 
-    // Helper methods
-    getTuple() {
-        /** Return the tuple representation of this. (this.x this.y). */
-        return [this.x, this.y];
-    }
-    copy() {
-        /** Return a copy of this. */
-        return new Vector(this.x, this.y);
-    }
-    offsetBy(pos) {
-        /** Add pos component wise to this. */
-        this.x += pos.x;
-        this.y += pos.y;
-    }
-
+    /**
+     * @returns a string in the form "Vector(x, y)
+     */
     toString() {
-        return "Vector(" + this.x.toString() + ", " + this.y.toString() + ")";
-        }
-
-    // Vector math
-    getUnit() {
-        let size = Math.sqrt(this.x ** 2 + this.y ** 2);
-        return new Vector(this.x / size, this.y / size);
+        return "Vector(" + this.valuesToString() + ")";
     }
-    getOriginLength() {
-        /** Return the length from (0, 0) to this. */
-        return Math.sqrt(this.x ** 2 + this.y ** 2);
-    }
-    getDotProduct(other) {
-        /** Return the dot product of this and other. */
-        return this.x * other.x + this.y * other.y
-    }
-    getProjectionOnto(vector) {
-        /** Return the position of the projection of this onto vector. */
-        let projLen = (vector.getDotProduct(this) / vector.getOriginLength() ** 2);
-        return new Vector(vector.x * projLen, vector.y * projLen);
-    }
-    getNormal() {
-        return new Vector(this.y, -this.x)
+    /**
+     * @returns a string in the form "x, y";
+     */
+    valuesToString() {
+        return this.x.toString() + ", " + this.y.toString();
     }
 
-    // Position math
-    plus(pos) {
-        /** Return a new pos where the components are the product of this and pos. */
-        return new Vector(this.x + pos.x, this.y + pos.y);
-    }
-    minus(pos) {
-        /** Return a new pos where the components are the difference of this and pos. */
-        return new Vector(this.x - pos.x, this.y - pos.y);
-    }
-    multiplied(n) {
-        /** Return a new vector with the components of this multiplied by n. */
-        return new Vector(this.x * n, this.y * n);
-    }
-    divided(n) {
-        /** Return a new vector with the components of this divided by n. */
-        return new Vector(this.x / n, this.y / n);
-    }
 }

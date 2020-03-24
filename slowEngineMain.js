@@ -1,14 +1,13 @@
-import Engine from "./slowEngine/engine.js";
+import SlowEngine from "./slowEngine/slowEngine.js";
 import {setUp, main} from "./source/main.js";
 
 
-let engine = new Engine();
 function loop() {
     /** Main engine/game loop - this calls the users code. */
-    engine.update();
-    main(engine);
+    SlowEngine.GameObjects._updateObjects();
+    main();
     requestAnimationFrame(loop);
 };
 
-setUp(engine);
+setUp();
 loop();
