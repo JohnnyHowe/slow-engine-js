@@ -1,27 +1,44 @@
 
-export default class Clock {
+/**
+ * Clock object - controls all time related things.
+ */
+class ClockClass {
+
+    // Attributes
+    startTime;      // Time the clock was created.
+    lastUpdateTime; // Time of last frame.
+    deltaTime;      // Time between current and last frame
+
+    /** 
+     * Update the clock and its attributes.
+     */
+    update() {
+        let currentTime = Date.now();
+        this.deltaTime = (currentTime - this.lastUpdateTime) / 1000;
+        this.lastUpdateTime = currentTime;
+    }
+
+    /**
+     * Get the time between the current and the last frame.
+     * The time between the clock update function to be exact.
+     * @returns {number} time difference between this and last frame.
+     */
+    getDeltaTime() {
+        return this.deltaTime;
+    }
+
+    /**
+     * Make/Initialize the clock
+     * Sets start time etc
+     * @ignore
+     */
     constructor() {
         this.startTime = Date.now();
-        this.lastFrameTime = this.startTime;
-        this.rawdtime = NaN
-        this._dtimeMult = 1
-        this.frameCount = 0;
-    }
-    update() {
-        let currentTime = Date.now()
-        this.rawdtime = (currentTime - this.lastFrameTime) / 1000;
-        this.lastFrameTime = currentTime;
-        this.frameCount += 1;
-    }
-    getdtime() {
-        /** Returns the time between the current and previous frame in milliseconds. */
-        return this.rawdtime * this._dtimeMult;
-    }
-    getFPS() {
-        return 1 / this.getdtime();
-    }
-    getAvgFPS() {
-        // console.log(Date.now() - this.startTime)
-        return this.frameCount / ((Date.now() - this.startTime) / 1000);
+        this.lastUpdateTime = this.startTime;
+        this.deltaTime = 0;
     }
 }
+
+
+let Clock = new ClockClass();
+export {Clock}
