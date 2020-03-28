@@ -11,8 +11,11 @@ import {Vector} from "../geometry/index.js";
  * @param {Vector} size - absolute size of image
  */
 function drawScreenImage(image, position, size) {
-    let topLeft = position.minus(size.divided(2));
-    Display.context.drawImage(image, topLeft.x, topLeft.y, size.x, size.y);
+    console.log(image)
+    if (image && image.isLoaded()) {
+        let topLeft = position.minus(size.divided(2));
+        Display.context.drawImage(image.image, topLeft.x, topLeft.y, size.x, size.y);
+    }
 }
 
 
@@ -24,9 +27,11 @@ function drawScreenImage(image, position, size) {
  * @param {Vector} pixelsPerUnit - how to scale the image, how many pixels per game unit?
  */
 function drawGameImage(image, position, pixelsPerUnit) {
-    let size = new Vector(image.width, image.height);
-    let displaySize = new Vector(size.x / pixelsPerUnit.x, size.y / pixelsPerUnit.y).multiplied(Display.Camera.pixelsPerUnit)
-    drawScreenImage(image, getScreenPosition(position), displaySize);
+    if (image && image.isLoaded()) {
+        let size = image.getSize();
+        let displaySize = new Vector(size.x / pixelsPerUnit.x, size.y / pixelsPerUnit.y).multiplied(Display.Camera.pixelsPerUnit)
+        drawScreenImage(image, getScreenPosition(position), displaySize);
+    }
 }
 
 

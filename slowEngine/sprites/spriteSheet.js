@@ -1,5 +1,6 @@
 import {Vector} from "../geometry/index.js";
 import {allSprites} from "./allSprites.js";
+import {Image} from "./image.js";
 
 
 /**
@@ -10,7 +11,7 @@ class SpriteSheet {
     // Attributes
     filename;   // Filename of the sprite sheet image
     numImages;  // Number of images on the sprite sheet (vector)
-    sheetImage;      // loaded sprite sheet image
+    sheetImage; // loaded sprite sheet image
     images;     // Array of split images - derived from image
 
     /**
@@ -22,7 +23,7 @@ class SpriteSheet {
         allSprites.push(this);
         this.filename = filename;
         this.numImages = numImages
-        this.loadImages();
+        this.loadImage();
     }
 
     /**
@@ -34,61 +35,48 @@ class SpriteSheet {
      * @returns {Image} image at index in the sprite sheet
      */
     getImageAtIndex(index) {
-        return this.images[index]
+        if (this.sheetImage.isLoaded()) {
+            if (!this.images) {
+                this.loadSprites();
+            }
+            return this.images[index];
+        } else {
+            return null;
+        }
     }
 
     /**
      * Load the image at this.filename into this.sheetImage
      * Once the sheet image is loaded, run loadSprites;
      */
-    loadImages() {
-        let image = new Image()
-        image.src = this.filename;
-        this.sheetImage = image;
-
-        // Don't ask - I couldn't make it work any other way.
+    loadImage() {
+        this.sheetImage = new Image();
+        this.sheetImage.loadFromFilepath(this.filename);
         let self = this;
-        image.onload = function () {
-            self.loadSprites();
-        }
+        this.sheetImage.onload = function() {self.loadSprites}
     }
 
     /**
-     * Is the sprite sheet is fully loaded
-     * @returns {Boolean} whether the sheet is fully loaded
+     * Get the size of the individual images on the sheet
+     * @returns {Vector} size of individual sprites
      */
-    isLoaded() {
-        let loaded = true;
-        if (!this.sheetImage || !this.images) {
-            loaded = false;
-        } else {
-            for (let sprite of this.images) {
-                if (!sprite) {
-                    loaded = false;
-                    break
-                }
-            }
-        }
-        return loaded;
+    getSpriteSize() {
+        return new Vector(this.images.width / this.numImages.x, this.images.height / this.numImages.y);
     }
 
     /**
      * Split up the main sprite sheet image.
-     * Put the individual sprites into this.images;
+     * Put the individual sprite images into this.images;
      * Once complete, set this.loaded to true;
+     * images are stored as SlowEngineImages
      */
     loadSprites() {
-        let spriteSize = new Vector(this.sheetImage.width / this.numImages.x, this.sheetImage.height / this.numImages.y);
         this.images = [];
         for (let x = 0; x < this.numImages.x; x++) {
             for (let y = 0; y < this.numImages.y; y++) {
-                let tempCanvas = document.createElement("canvas");
-                let tempContext = tempCanvas.getContext("2d");
-                tempCanvas.width = spriteSize.x;
-                tempCanvas.height = spriteSize.y;
-                let sourcePos = new Vector(spriteSize.x * x, spriteSize.y * y);
-                tempContext.drawImage(this.sheetImage, sourcePos.x, sourcePos.y, spriteSize.x, spriteSize.y, 0, 0, spriteSize.x, spriteSize.y);
-                this.images.push(tempCanvas);
+                let image = new Image();
+                image.loadFromSpriteSheet(this, new Vector(x, y));
+                this.images.push(image);
             }
         }
     }

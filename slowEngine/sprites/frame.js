@@ -5,11 +5,11 @@ class Frame {
     // Attributes
     pixelsPerUnit;  // How many pixels takes up one game unit?
     duration;       // Frame display time
-    image;          // Loaded image
+    image;          // Image object
 
     /**
      * Create the frame.
-     * @param {Image} image - Sprite image for frame
+     * @param {SlowEngineImage} image - image for frame
      * @param {Vector} pixelsPerUnit - How many pixels fit into one game unit
      */
     constructor(image, pixelsPerUnit, duration) {

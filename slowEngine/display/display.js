@@ -21,11 +21,12 @@ class DisplayClass {
         this.setCanvas();
         this.setSize(this.getCanvasSize())
         this.Camera = new Camera();
+        this.setResizeListener();
     }
 
     /** 
      * Get the current size of the display (in pixels).
-     * @returns {Vector} display size.
+     * @returns {Vector} display size
      */
     getSize() {
         return this.size.getCopy();
