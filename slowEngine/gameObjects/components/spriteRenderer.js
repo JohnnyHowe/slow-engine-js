@@ -1,5 +1,5 @@
 import * as Draw from "../../draw/index.js";
-import {Animation} from "../../sprites/index.js";
+// import {Animation} from "../../sprites/index.js";
 
 
 /**
@@ -47,7 +47,7 @@ class SpriteRenderer {
      */
     runAnimation() {
         if (this.currentAnimation) {
-            this.animations[this.currentAnimation].run(this.parent.getComponentByName("Transform"));
+            this.animations[this.currentAnimation].run(this.parent.getComponent("Transform"));
         }
     }
 
@@ -63,7 +63,7 @@ class SpriteRenderer {
      * Draw a solid rect
      */
     drawRect() {
-        let transform = this.parent.getComponentByName("Transform");
+        let transform = this.parent.getComponent("Transform");
         Draw.drawGameRect(transform.position, transform.size, this.color);
     }
 }

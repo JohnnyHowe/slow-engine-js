@@ -23,7 +23,7 @@ class GameObject {
      */
     runComponents() {
         for (let componentName in this.components) {
-            this.getComponentByName(componentName).run();
+            this.getComponent(componentName).run();
         }
     }
 
@@ -45,7 +45,7 @@ class GameObject {
      * @param {Component} component - name of component to get
      * @returns {Component} initialized component of type component attached to this.
      */
-    getComponentByName(componentName) {
+    getComponent(componentName) {
         if (componentName in this.components) {
             return this.components[componentName];
         } else {

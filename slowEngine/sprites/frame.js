@@ -1,4 +1,3 @@
-
 /** Frame class */
 class Frame {
 
@@ -11,6 +10,7 @@ class Frame {
      * Create the frame.
      * @param {SlowEngineImage} image - image for frame
      * @param {Vector} pixelsPerUnit - How many pixels fit into one game unit
+     * @param {number} duration - how long the frame is displayed for
      */
     constructor(image, pixelsPerUnit, duration) {
         this.image = image;
