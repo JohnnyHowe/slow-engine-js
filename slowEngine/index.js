@@ -7,6 +7,7 @@ import * as Draw from "./draw/index.js";
 import {Display} from "./display/index.js";
 import {Clock} from "./clock.js";
 import * as Sprites from "./sprites/index.js";
+import {Keyboard} from "./keyboard.js";
 
 
 class SlowEngineClass {
@@ -18,6 +19,7 @@ class SlowEngineClass {
     Display;
     Clock;
     Sprites;
+    Keyboard;
 
     constructor() {
         this.Geometry = Geometry;
@@ -26,6 +28,7 @@ class SlowEngineClass {
         this.Display = Display;
         this.Clock = Clock;
         this.Sprites = Sprites;
+        this.Keyboard = Keyboard;
     }
 
     update() {

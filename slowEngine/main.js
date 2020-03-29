@@ -1,5 +1,5 @@
-import SlowEngine from "./slowEngine/index.js";
-import {setup, main} from "./main.js";
+import SlowEngine from "./index.js";
+import {setup, main} from "../source/main.js";
 
 
 function slowEngineMain() {
