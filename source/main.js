@@ -13,8 +13,7 @@ function setup() {
 function main() {
     SlowEngine.update();
     SlowEngine.Display.clear();
-    player.runComponents();
-    console.log(SlowEngine.Keyboard.isPressed(" "))
+    player.run();
 }
 
 

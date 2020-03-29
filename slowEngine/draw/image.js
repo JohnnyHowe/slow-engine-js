@@ -1,5 +1,5 @@
 import {Display} from "../display/index.js";
-import {getScreenPosition, getScreenSize} from "./index.js";
+import * as Conversions from "./vectorConversions.js";
 
 import {Vector} from "../geometry/index.js";
 
@@ -29,7 +29,7 @@ function drawGameImage(image, position, pixelsPerUnit) {
     if (image.isLoaded()) {
         let size = image.getSize();
         let displaySize = new Vector(size.x / pixelsPerUnit.x, size.y / pixelsPerUnit.y).multiplied(Display.Camera.pixelsPerUnit)
-        drawScreenImage(image, getScreenPosition(position), displaySize);
+        drawScreenImage(image, Conversions.getScreenPosition(position), displaySize);
     }
 }
 

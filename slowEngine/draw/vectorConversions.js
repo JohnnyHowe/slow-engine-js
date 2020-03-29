@@ -7,7 +7,8 @@ import {Display} from "../display/index.js";
  * @returns {Vector} screenPosition.
  */
 function getScreenPosition(gamePosition) {
-    let screenPos = gamePosition;
+    let screenPos = gamePosition.getCopy();
+    screenPos.y = -screenPos.y;
     screenPos = screenPos.multiplied(Display.Camera.pixelsPerUnit)
     screenPos = screenPos.plus(Display.getSize().divided(2))
     return screenPos;

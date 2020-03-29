@@ -8,8 +8,8 @@ class SlowEngineImage {
     // Attributes
     image;          // Normal JS image 
     filename;
-    loaded; // Is the image loaded?
-    onLoadList;    // array of functions to call once the image is loaded
+    loaded;         // Is the image loaded?
+    onLoadList;     // array of functions to call once the image is loaded
 
     constructor() {
         this.loaded = false;
@@ -77,7 +77,6 @@ class SlowEngineImage {
         tempCanvas.height = spriteSize.y;
         let sourcePos = new Vector(spriteSize.x * position.x, spriteSize.y * position.y);
         tempContext.drawImage(spriteSheet.image.image, sourcePos.x, sourcePos.y, spriteSize.x, spriteSize.y, 0, 0, spriteSize.x, spriteSize.y);
-        // console.log(spriteSize, spriteSheet.spriteSize)
         this.image = tempCanvas;
         this.loaded = true;
     }

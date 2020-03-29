@@ -13,6 +13,7 @@ class SpriteRenderer {
     color;      // Color of the sprite when rendering a solid block
     animations; // Animations dictionary
     currentAnimation;   // Current animation playing
+    playbackSpeed;  // How fast to play the animation
 
     /**
      * Make the renderer.
@@ -21,6 +22,7 @@ class SpriteRenderer {
         this.parent = parent;
         this.color = "#000";
         this.animations = {};
+        this.playbackSpeed = 1;
     }
 
     /**
@@ -47,7 +49,7 @@ class SpriteRenderer {
      */
     runAnimation() {
         if (this.currentAnimation) {
-            this.animations[this.currentAnimation].run(this.parent.getComponent("Transform"));
+            this.animations[this.currentAnimation].run(this.parent.getComponent("Transform"), this.playbackSpeed);
         }
     }
 

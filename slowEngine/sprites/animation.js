@@ -40,17 +40,20 @@ class Animation {
      * update play time and draw the animation.
      * @param {Transform} transform - transform component of parent
      */
-    run(tranform) {
-        this.update();
-        this.draw(tranform);
+    run(transform, playbackSpeed) {
+        this.update(playbackSpeed);
+        this.draw(transform);
     }
 
     /**
      * Update the animation so it actually animates
      * Does not show anything.
      */
-    update() {
-        this.playTime += Clock.getDeltaTime();
+    update(playbackSpeed) {
+        if (playbackSpeed === undefined) {
+            playbackSpeed = 1;
+        }
+        this.playTime += Clock.getDeltaTime() * playbackSpeed;
     }
 
     /**
