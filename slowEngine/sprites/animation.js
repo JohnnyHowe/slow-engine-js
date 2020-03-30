@@ -11,11 +11,13 @@ class Animation {
     frames;     // List of frames to play.
     playTime;   // Time the animation has been playing
     frameTimes; // Array of times to end frames
+    lastFrame;  // the last frame that was displayed
 
     constructor() {
         this.frames = [];
         this.frameTimes = [0];
         this.playTime = 0;
+        this.lastFrame = undefined;
     }
 
     /**
@@ -43,6 +45,22 @@ class Animation {
     run(transform, playbackSpeed) {
         this.update(playbackSpeed);
         this.draw(transform);
+    }
+
+    /**
+     * Has the animation just finished?
+     * Last sprite is finished playing
+     * Only true for the one frame once the animation is done.
+     * @returns {Boolean} whether the animation is finished
+     */
+    isFinished() {
+        let finished = true;
+        if (!this.lastFrame === undefined) {
+            if (!(this.lastFrame === this.frames[this.frames.length - 1])) {
+                finished = false;
+            }
+        }
+        return finished;
     }
 
     /**
@@ -77,10 +95,10 @@ class Animation {
      */
     draw(transform) {
         let frame = this.frames[this.getCurrentIndex()];
-        // console.log(frame)
         if (frame.image) {
             let size = new Vector(frame.pixelsPerUnit.x / transform.size.x, frame.pixelsPerUnit.y / transform.size.y);
             Draw.drawGameImage(frame.image, transform.position, size);
+            this.lastFrame = frame;
         }
     }
 }

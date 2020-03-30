@@ -3,7 +3,7 @@ let Vector = SlowEngine.Geometry.Vector;
 
 
 let rightSheet = new SlowEngine.Sprites.SpriteSheet("../../source/images/runRight.png", new Vector(8, 1));
-let pixelsPerUnit = new Vector(10, 10);
+let pixelsPerUnit = new Vector(12, 22);
 let duration = 0.1;
 
 let runRightAnimation = new SlowEngine.Sprites.Animation();

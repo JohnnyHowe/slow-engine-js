@@ -14,6 +14,8 @@ class SpriteRenderer {
     animations; // Animations dictionary
     currentAnimation;   // Current animation playing
     playbackSpeed;  // How fast to play the animation
+    finishAnimation;    // Does the current animation have to finish before the next animation runs?
+    nextAnimation;  // What animation is played next?
 
     /**
      * Make the renderer.
@@ -23,6 +25,7 @@ class SpriteRenderer {
         this.color = "#000";
         this.animations = {};
         this.playbackSpeed = 1;
+        this.finishAnimation = false;
     }
 
     /**
@@ -41,11 +44,12 @@ class SpriteRenderer {
      */
     run() {
         this.drawRect();
+        this.updateAnimation();
         this.runAnimation();
     }
 
     /**
-     * Run the current animation
+     * If a current animation is set, draw it
      */
     runAnimation() {
         if (this.currentAnimation) {
@@ -54,11 +58,30 @@ class SpriteRenderer {
     }
 
     /**
+     * Update the curent animation
+     * if nextAnimation is defined, set the current animation to it unless finishAnimation is true,
+     * if this is the case, wait until the current is finished
+     */
+    updateAnimation() {
+        if (this.nextAnimation) {
+            if (this.finishAnimation && this.currentAnimation != undefined) {
+                if (this.animations[this.currentAnimation].isFinished()) {
+                    this.currentAnimation = this.nextAnimation;
+                    this.nextAnimation = undefined;
+                }
+            } else {
+                this.currentAnimation = this.nextAnimation;
+                this.nextAnimation = undefined;
+            }
+        }
+    }
+
+    /**
      * Set the animation to play
      * @param {string} name - name of an already created animation
      */
-    setCurrentAnimation(name) {
-        this.currentAnimation = name;
+    setNextAnimation(name) {
+        this.nextAnimation = name;
     }
 
     /**
