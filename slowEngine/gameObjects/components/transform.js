@@ -11,6 +11,7 @@ class Transform {
     name = "Transform";
     parent;
     position;
+    nextMovement;
     size;
 
     /**
@@ -21,12 +22,22 @@ class Transform {
         this.parent = parent;
         this.position = new Geometry.Vector(0, 0);
         this.size = new Geometry.Vector(1, 1);
+        this.nextMovement = new Geometry.Vector(0, 0);
+    }
+
+    /**
+     * Move the 
+     */
+    moveNextFrame(positionChange) {
+        this.nextMovement = this.nextMovement.plus(positionChange);
     }
 
     /**
      * Placeholder
      */
     run() {
+        this.position = this.position.plus(this.nextMovement);
+        this.nextMovement = new Geometry.Vector(0, 0);
     }
 }
 

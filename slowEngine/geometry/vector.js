@@ -13,13 +13,30 @@ class Vector {
         this.x = x;
         this.y = y;
     }
-
+    
     /**
      * Get a copy of this vector.
      * @returns {Vector} The copy of this vector.
      */
     getCopy() {
         return new Vector(this.x, this.y);
+    }
+
+    /**
+     * Get the length of the vector.
+     * @returns {number} vector length
+     */
+    getLength() {
+        return Math.sqrt(this.x * this.x + this.y * this.y);
+    }
+
+    /**
+     * Return the product of the components of this.
+     * If the vector represents a rectange then its the area
+     * @returns {number} product of x and y
+     */
+    getArea() {
+        return this.x * this.y;
     }
 
     /**
@@ -82,8 +99,34 @@ class Vector {
         return new Vector(this.x / n, this.y / n)
     }
 
+    // ==================================================
+    // Linear Algebra
+    // ==================================================
 
+    /**
+     * Get the dot product of this and other
+     * @param {Vector} other 
+     * @returns {number} dot product
+     */
+    getDotProduct(other) {
+        return this.x * other.x + this.y * other.y;
+    }
 
+    /**
+     * Get the length of the projection of this onto other
+     * @param {Vector} other 
+     */
+    getProjectionOntoLength(other) {
+        return this.getDotProduct(other) / other.getLength();
+    }
+
+    /**
+     * Get the vector projection of this onto other
+     * @param {Vector} other 
+     */
+    getProjectionOnto(other) {
+        return other.multiplied(this.getProjectionOntoLength(other) / other.getLength())
+    }
 }
 
 

@@ -55,7 +55,7 @@ class Animation {
      */
     isFinished() {
         let finished = true;
-        if (!this.lastFrame === undefined) {
+        if (!(this.lastFrame === undefined)) {
             if (!(this.lastFrame === this.frames[this.frames.length - 1])) {
                 finished = false;
             }

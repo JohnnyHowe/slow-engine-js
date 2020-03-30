@@ -85,6 +85,15 @@ class SpriteRenderer {
     }
 
     /**
+     * Get the name of the animation playing
+     * @returns {string} animation name
+     */
+    getCurrentAnimationName() {
+        return this.currentAnimation;
+
+    }
+
+    /**
      * Draw a solid rect
      */
     drawRect() {
