@@ -70,7 +70,7 @@ class BoxCollider {
             other.resolveCollision(this);
         } else {
             // Both have rigid bodies
-            this.resolveDualRigidBodyCollision(other);
+            console.log("CANNOT YET HANDLE COLLISIONS BETWEEN TWO RIGIDBODIES")
         }
     }
 
@@ -79,84 +79,37 @@ class BoxCollider {
      * Assuming other and this have collided, and both have rigid bodies
      * @param {BoxCollider} other - collider that has collided with this
      */
-    resolveDualRigidBodyCollision(other) {
-        this.resolveDualRigidBodyCollisionPosition(other);
-        this.resolveDualRigidBodyCollisionVelocity(other);
-    }
-
-    /**
-     * Assuming this and other have collided and both have rigidbodies
-     * fix their velocities
-     * @param {BoxCollider} other 
-     */
-    resolveDualRigidBodyCollisionVelocity(other) {
-        let overlap = this.getOverlap(other);
-        let collisionAxis = this.getCollisionAxis(overlap);
-
-        let thisRigidBody = this.parent.getComponent("RigidBody");
-        let otherRigidBody = other.parent.getComponent("RigidBody");
-
-        let totalMomentum = thisRigidBody.getMomentum().plus(otherRigidBody.getMomentum());
-        let finalVelocity = totalMomentum.divided(thisRigidBody.mass + otherRigidBody.mass);
-
-        if (collisionAxis.x) {
-            thisRigidBody.velocity.x = finalVelocity.x;
-            otherRigidBody.velocity.x = finalVelocity.x;
-        } else {
-            thisRigidBody.velocity.y = finalVelocity.y;
-            otherRigidBody.velocity.y = finalVelocity.y;
-        }
-    }
 
     /**
      * Get the axis of the collision
-     * axis is either the vector (0, 1) or (1, 0)
+     * axis is up, down, left or right.
+     * Points as close to this as possible
+     * has length of the overlap component
      * @param {Vector} overlap 
      * @returns {Vector} collision axis
      */
-    getCollisionAxis(overlap) {
-        if (overlap.x > overlap.y) {
-            return new Vector(0, 1);
-        } else {
-            return new Vector(1, 0);
-        }
-    }
-
-    /**
-     * Assuming this and other have collided and both have rigidbodies
-     * fix their positions
-     * @param {BoxCollider} other 
-     */
-    resolveDualRigidBodyCollisionPosition(other) {
-        let thisRigidBody = this.parent.getComponent("RigidBody");
-        let otherRigidBody = other.parent.getComponent("RigidBody");
-
+    getCollisionAxis(other) {
         let thisTransform = this.parent.getComponent("Transform");
         let otherTransform = other.parent.getComponent("Transform");
-
         let overlap = this.getOverlap(other);
-        let totalChange = new Vector(0, 0); 
+
+        let axis = new Vector(0, 0)
 
         if (overlap.x > overlap.y) {
             if (thisTransform.position.y < otherTransform.position.y) {
-                totalChange.y = overlap.y;
+                axis.y = -overlap.y;
             } else {
-                totalChange.y = -overlap.y;
+                axis.y = overlap.y;
             }
         } else {
             if (thisTransform.position.x < otherTransform.position.x) {
-                totalChange.x = overlap.x;
+                axis.x = -overlap.x;
             } else {
-                totalChange.x = -overlap.x;
+                axis.x = overlap.x;
             }
         }
-        let totalMass = thisRigidBody.mass + otherRigidBody.mass;
-
-        let thisChange = totalChange.multiplied(-thisRigidBody.mass / totalMass);
-        let otherChange = totalChange.multiplied(otherRigidBody.mass / totalMass);
-
-        thisTransform.position = thisTransform.position.plus(thisChange);
-        otherTransform.position = otherTransform.position.plus(otherChange);
+        // console.log(axis)a;
+        return axis;
     }
 
     /**
@@ -165,52 +118,16 @@ class BoxCollider {
      * @param {BoxCollider} other - collider that has collided with this
      */
     resolveSingleRigidBodyCollision(other) {
-        let resolution = this.getRigidPositionResolution(other);
-        this.parent.getComponent("Transform").position = this.parent.getComponent("Transform").position.plus(resolution);
-
-        let velocity = this.parent.getComponent("RigidBody").velocity;
-        if (resolution.x) {
-            velocity.x = 0;
-        }
-        if (resolution.y) {
-            velocity.y = 0;
-        }
-    }
-
-    /**
-     * Get the position resolution for the collision between this (w/ rigidbody) and other (/wo rigidbody)
-     * @param {BoxCollider} other 
-     * @returns {Vector} position resolution - add to this position to resolve collision
-     */
-    getRigidPositionResolution(other) {
-        let velocity = this.parent.getComponent("RigidBody").velocity;
-        let overlap = this.getOverlap(other);
-        let horizontalResolution = new Vector(-overlap.x * Math.sign(velocity.x), 0);
-        let verticalResolution = new Vector(0, -overlap.y * Math.sign(velocity.y));
-
-        let resolution;
-
-        if (horizontalResolution.getLength() == 0) {
-            resolution = verticalResolution;
-        } else if (verticalResolution.getLength() == 0) {
-            resolution = horizontalResolution;
-        } else if (horizontalResolution.getLength() <= verticalResolution.getLength()) {
-            resolution = horizontalResolution;
+        let thisTransform = this.parent.getComponent("Transform");
+        let thisRigidBody = this.parent.getComponent("RigidBody");
+        let collisionAxis = this.getCollisionAxis(other);
+        thisTransform.position.x += collisionAxis.x;
+        thisTransform.position.y += collisionAxis.y;
+        if (collisionAxis.x) {
+            thisRigidBody.velocity.x = 0;
         } else {
-            resolution = verticalResolution;
+            thisRigidBody.velocity.y = 0;
         }
-
-        return resolution;
-    }
-
-    /**
-     * Get the position resolution for the collision between this and other, both with rigidbodies
-     * @param {BoxCollider} other 
-     * @returns {Vector} position resolution - add to this position to resolve collision
-     */
-    getPositionResolution(other) {
-        console.log("ASS")
-        return new Vector(0, 0)
     }
 
     /**

@@ -39,7 +39,7 @@ class Block extends SlowEngine.GameObjects.GameObject {
 
     run() {
         this.runComponents();
-        this.applyGravity();
+        // this.applyGravity();
     }
 }
 
@@ -51,7 +51,7 @@ function setup() {
     ];
 
     walls = [
-        new Wall(new Vector(0, -2), new Vector(31, 1)),
+        // new Wall(new Vector(0, -2), new Vector(31, 1)),
         new Wall(new Vector(8, 0), new Vector(1, 3)),
         new Wall(new Vector(-8, 0), new Vector(1, 3)),
     ];

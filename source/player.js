@@ -9,6 +9,8 @@ class Player extends SlowEngine.GameObjects.GameObject {
         super();
         this.getComponent("Transform").size = new Vector(12, 21).multiplied(0.15);
 
+        this.player = true;
+
         let animator = this.addComponent(SlowEngine.GameObjects.Components.SpriteRenderer);
         animator.addAnimation("rightRun", PlayerAnimations.runRight);
         animator.addAnimation("leftRun", PlayerAnimations.runLeft);
@@ -72,7 +74,7 @@ class Player extends SlowEngine.GameObjects.GameObject {
     }
 
     run() {
-        this.applyGravity();
+        // this.applyGravity();
         this.movement();
         this.controlAnimation();
         this.runComponents()
