@@ -42,12 +42,14 @@ class BoxCollider {
      */
     runCollision(gameObject) {
         let boxCollider = gameObject.getComponent("BoxCollider");
-        let overlap = this.getOverlap(boxCollider);
-        if (overlap.getArea() > 0) {
-            this.resolveCollision(boxCollider);
-            return true;
+        if (boxCollider != this) {
+            let overlap = this.getOverlap(boxCollider);
+            if (overlap.getArea() > 0) {
+                this.resolveCollision(boxCollider);
+                return true;
+            }
+            return false;
         }
-        return false;
     }
 
     /**
@@ -68,8 +70,93 @@ class BoxCollider {
             other.resolveCollision(this);
         } else {
             // Both have rigid bodies
-            console.log("Cannot yet handle two rigid body collisions.");
+            this.resolveDualRigidBodyCollision(other);
         }
+    }
+
+    /**
+     * Resolve the collision
+     * Assuming other and this have collided, and both have rigid bodies
+     * @param {BoxCollider} other - collider that has collided with this
+     */
+    resolveDualRigidBodyCollision(other) {
+        this.resolveDualRigidBodyCollisionPosition(other);
+        this.resolveDualRigidBodyCollisionVelocity(other);
+    }
+
+    /**
+     * Assuming this and other have collided and both have rigidbodies
+     * fix their velocities
+     * @param {BoxCollider} other 
+     */
+    resolveDualRigidBodyCollisionVelocity(other) {
+        let overlap = this.getOverlap(other);
+        let collisionAxis = this.getCollisionAxis(overlap);
+
+        let thisRigidBody = this.parent.getComponent("RigidBody");
+        let otherRigidBody = other.parent.getComponent("RigidBody");
+
+        let totalMomentum = thisRigidBody.getMomentum().plus(otherRigidBody.getMomentum());
+        let finalVelocity = totalMomentum.divided(thisRigidBody.mass + otherRigidBody.mass);
+
+        if (collisionAxis.x) {
+            thisRigidBody.velocity.x = finalVelocity.x;
+            otherRigidBody.velocity.x = finalVelocity.x;
+        } else {
+            thisRigidBody.velocity.y = finalVelocity.y;
+            otherRigidBody.velocity.y = finalVelocity.y;
+        }
+    }
+
+    /**
+     * Get the axis of the collision
+     * axis is either the vector (0, 1) or (1, 0)
+     * @param {Vector} overlap 
+     * @returns {Vector} collision axis
+     */
+    getCollisionAxis(overlap) {
+        if (overlap.x > overlap.y) {
+            return new Vector(0, 1);
+        } else {
+            return new Vector(1, 0);
+        }
+    }
+
+    /**
+     * Assuming this and other have collided and both have rigidbodies
+     * fix their positions
+     * @param {BoxCollider} other 
+     */
+    resolveDualRigidBodyCollisionPosition(other) {
+        let thisRigidBody = this.parent.getComponent("RigidBody");
+        let otherRigidBody = other.parent.getComponent("RigidBody");
+
+        let thisTransform = this.parent.getComponent("Transform");
+        let otherTransform = other.parent.getComponent("Transform");
+
+        let overlap = this.getOverlap(other);
+        let totalChange = new Vector(0, 0); 
+
+        if (overlap.x > overlap.y) {
+            if (thisTransform.position.y < otherTransform.position.y) {
+                totalChange.y = overlap.y;
+            } else {
+                totalChange.y = -overlap.y;
+            }
+        } else {
+            if (thisTransform.position.x < otherTransform.position.x) {
+                totalChange.x = overlap.x;
+            } else {
+                totalChange.x = -overlap.x;
+            }
+        }
+        let totalMass = thisRigidBody.mass + otherRigidBody.mass;
+
+        let thisChange = totalChange.multiplied(-thisRigidBody.mass / totalMass);
+        let otherChange = totalChange.multiplied(otherRigidBody.mass / totalMass);
+
+        thisTransform.position = thisTransform.position.plus(thisChange);
+        otherTransform.position = otherTransform.position.plus(otherChange);
     }
 
     /**
@@ -78,7 +165,7 @@ class BoxCollider {
      * @param {BoxCollider} other - collider that has collided with this
      */
     resolveSingleRigidBodyCollision(other) {
-        let resolution = this.getPositionResolution(other);
+        let resolution = this.getRigidPositionResolution(other);
         this.parent.getComponent("Transform").position = this.parent.getComponent("Transform").position.plus(resolution);
 
         let velocity = this.parent.getComponent("RigidBody").velocity;
@@ -95,7 +182,7 @@ class BoxCollider {
      * @param {BoxCollider} other 
      * @returns {Vector} position resolution - add to this position to resolve collision
      */
-    getPositionResolution(other) {
+    getRigidPositionResolution(other) {
         let velocity = this.parent.getComponent("RigidBody").velocity;
         let overlap = this.getOverlap(other);
         let horizontalResolution = new Vector(-overlap.x * Math.sign(velocity.x), 0);
@@ -107,13 +194,23 @@ class BoxCollider {
             resolution = verticalResolution;
         } else if (verticalResolution.getLength() == 0) {
             resolution = horizontalResolution;
-        } else if (horizontalResolution.getLength() < verticalResolution.getLength()) {
+        } else if (horizontalResolution.getLength() <= verticalResolution.getLength()) {
             resolution = horizontalResolution;
         } else {
             resolution = verticalResolution;
         }
 
         return resolution;
+    }
+
+    /**
+     * Get the position resolution for the collision between this and other, both with rigidbodies
+     * @param {BoxCollider} other 
+     * @returns {Vector} position resolution - add to this position to resolve collision
+     */
+    getPositionResolution(other) {
+        console.log("ASS")
+        return new Vector(0, 0)
     }
 
     /**

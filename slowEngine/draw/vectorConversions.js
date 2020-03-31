@@ -25,7 +25,17 @@ function getScreenSize(gameSize) {
 }
 
 
+function getGamePosition(screenPosition) {
+    let gamePos = screenPosition.getCopy();
+    gamePos = gamePos.minus(Display.getSize().divided(2));
+    gamePos = gamePos.divided(Display.Camera.pixelsPerUnit);
+    gamePos.y = -gamePos.y;
+    return gamePos;
+}
+
+
 export {
     getScreenPosition,
     getScreenSize,
+    getGamePosition,
 }

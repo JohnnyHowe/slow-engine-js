@@ -21,6 +21,14 @@ class RigidBody {
     }
 
     /**
+     * Get the momentum of the rigidbody
+     * @returns {Vector} momentum
+     */
+    getMomentum() {
+        return this.velocity.multiplied(this.mass);
+    }
+
+    /**
      * Main run function,
      * is called once per frame
      * Applies the velocity

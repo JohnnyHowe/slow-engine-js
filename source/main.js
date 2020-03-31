@@ -4,7 +4,23 @@ import {Player} from "./player.js";
 let Vector = SlowEngine.Geometry.Vector;
 
 let player;
+let walls = [];
 let blocks = [];
+
+
+class Wall extends SlowEngine.GameObjects.GameObject {
+    constructor(position, size) {
+        super();
+        this.addComponent(SlowEngine.GameObjects.Components.SpriteRenderer);
+        this.addComponent(SlowEngine.GameObjects.Components.BoxCollider);
+        this.getComponent("Transform").position = position;
+        this.getComponent("Transform").size = size;
+    }
+
+    run() {
+        this.runComponents();
+    }
+}
 
 
 class Block extends SlowEngine.GameObjects.GameObject {
@@ -12,8 +28,18 @@ class Block extends SlowEngine.GameObjects.GameObject {
         super();
         this.addComponent(SlowEngine.GameObjects.Components.SpriteRenderer);
         this.addComponent(SlowEngine.GameObjects.Components.BoxCollider);
+        this.addComponent(SlowEngine.GameObjects.Components.RigidBody);
         this.getComponent("Transform").position = position;
         this.getComponent("Transform").size = size;
+    }
+
+    applyGravity() {
+        this.getComponent("RigidBody").velocity.y -= 9.8 * SlowEngine.Clock.getDeltaTime();
+    }
+
+    run() {
+        this.runComponents();
+        this.applyGravity();
     }
 }
 
@@ -22,9 +48,12 @@ function setup() {
     player = new Player();
     
     blocks = [
-        new Block(new Vector(0, -3), new Vector(30, 1)),
-        // new Block(new Vector(2, 1), new Vector(1, 1)),
-        // new Block(new Vector(1, 2), new Vector(1, 1)),
+    ];
+
+    walls = [
+        new Wall(new Vector(0, -2), new Vector(31, 1)),
+        new Wall(new Vector(8, 0), new Vector(1, 3)),
+        new Wall(new Vector(-8, 0), new Vector(1, 3)),
     ];
 }
 
@@ -32,12 +61,30 @@ function setup() {
 function main() {
     SlowEngine.update();
     SlowEngine.Display.clear();
-    player.getComponent("BoxCollider").runCollisions(blocks);
+    
     player.run();
 
-    for (let block of blocks) {
-        block.runComponents();
+    if (SlowEngine.Mouse.isJustReleased(0)) {
+        blocks.push(new Block(SlowEngine.Mouse.getGamePosition(), new Vector(1, 1)))
     }
+
+    player.getComponent("BoxCollider").runCollisions(blocks.concat(walls));
+
+    for (let block of blocks) {
+        block.getComponent("BoxCollider").runCollisions(walls.concat(blocks));
+    }
+
+    for (let wall of walls) {
+        wall.run();
+    }
+
+    for (let block of blocks) {
+        block.run();
+    }
+
+    // for (let obj of allObjects) {
+        // obj.getComponent("BoxCollider").runCollisions(allObjects);
+    // }
 }
 
 

@@ -8,6 +8,7 @@ import {Display} from "./display/index.js";
 import {Clock} from "./clock.js";
 import * as Sprites from "./sprites/index.js";
 import {Keyboard} from "./keyboard.js";
+import {Mouse} from "./mouse.js";
 
 
 class SlowEngineClass {
@@ -20,6 +21,7 @@ class SlowEngineClass {
     Clock;
     Sprites;
     Keyboard;
+    Mouse;
 
     constructor() {
         this.Geometry = Geometry;
@@ -29,10 +31,12 @@ class SlowEngineClass {
         this.Clock = Clock;
         this.Sprites = Sprites;
         this.Keyboard = Keyboard;
+        this.Mouse = Mouse;
     }
 
     update() {
         this.Clock.update();
+        this.Mouse.update();
     }
 }
 
