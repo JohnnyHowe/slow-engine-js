@@ -7,7 +7,7 @@ let Vector = SlowEngine.Geometry.Vector;
 class Player extends SlowEngine.GameObjects.GameObject {
     constructor() {
         super();
-        this.getComponent("Transform").size = new Vector(12, 21).multiplied(0.15);
+        this.getComponent("Transform").size = new Vector(12, 21).multiplied(0.1);
 
         this.player = true;
 
@@ -20,13 +20,15 @@ class Player extends SlowEngine.GameObjects.GameObject {
         animator.color = "#999";
 
         this.addComponent(SlowEngine.GameObjects.Components.BoxCollider);
-        this.addComponent(SlowEngine.GameObjects.Components.RigidBody);
-        this.acceleration = 20;
+        let rigidBody = this.addComponent(SlowEngine.GameObjects.Components.RigidBody);
+        rigidBody.maxSpeed = 5;
+        this.acceleration = 50;
+        this.deceleration = 20;
         this.controls = {
             "left":     ["a", new Vector(-1, 0)],
             "right":    ["d", new Vector(1, 0)],
-            // "up":       ["w", new Vector(0, 1)],
-            // "down":     ["s", new Vector(0, -1)],
+            "up":       ["w", new Vector(0, 1)],
+            "down":     ["s", new Vector(0, -1)],
         }
     }
 
@@ -40,7 +42,7 @@ class Player extends SlowEngine.GameObjects.GameObject {
     controlAnimation() {
         let rigidBody = this.getComponent("RigidBody");
         let idleThreshold = 2;
-        if (Math.abs(rigidBody.velocity.x) > idleThreshold) {
+        if (Math.abs(rigidBody.velocity.getLength()) > idleThreshold) {
             this.controlRunAnimation();
         } else {
             this.controlIdleAnimation();
@@ -70,14 +72,40 @@ class Player extends SlowEngine.GameObjects.GameObject {
             animator.setNextAnimation("rightRun");
         } else if (rigibBody.velocity.x < 0) {
             animator.setNextAnimation("leftRun");
+        } else {
+            // Check last animation
+            if (animator.getCurrentAnimationName().includes("left")) {
+                animator.setNextAnimation("leftRun");
+            } else {
+                animator.setNextAnimation("rightRun");
+            }
         }
     }
 
     run() {
         // this.applyGravity();
         this.movement();
+        this.applyFriction();
         this.controlAnimation();
         this.runComponents()
+    }
+
+    applyFriction() {
+        let friction = SlowEngine.Clock.getDeltaTime() * this.deceleration;
+        let rigidBody = this.getComponent("RigidBody");
+
+        let xChange = friction * Math.sign(rigidBody.velocity.x);
+        if (Math.abs(xChange) > Math.abs(rigidBody.velocity.x)) {
+            rigidBody.velocity.x = 0;
+        } else {
+            rigidBody.velocity.x -= xChange;
+        }
+        let yChange = friction * Math.sign(rigidBody.velocity.y);
+        if (Math.abs(yChange) > Math.abs(rigidBody.velocity.y)) {
+            rigidBody.velocity.y = 0;
+        } else {
+            rigidBody.velocity.y -= yChange;
+        }
     }
 
     movement() {

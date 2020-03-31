@@ -8,6 +8,8 @@ class RigidBody {
     name = "RigidBody";
     parent;
     velocity;
+    maxVelocity;    // A max velocity component-wise
+    maxSpeed;       // max speed
     mass;
 
     /** 
@@ -17,6 +19,8 @@ class RigidBody {
     constructor(parent) {
         this.parent = parent;
         this.velocity = new Vector(0, 0);
+        this.maxVelocity = new Vector(Infinity, Infinity);
+        this.maxSpeed = Infinity
         this.mass = 1;
     }
 
@@ -29,11 +33,31 @@ class RigidBody {
     }
 
     /**
+     * Apply the max speed cap
+     */
+    capSpeed() {
+        let scale = this.velocity.getLength() / this.maxSpeed;
+        if (scale > 1) {
+            this.velocity = this.velocity.divided(scale);
+        }
+    }
+
+    /**
+     * Apply the max velocity cap.
+     */
+    capVelocity() {
+        this.velocity.x = Math.min(Math.max(-this.maxVelocity.x, this.velocity.x), this.maxVelocity.x);
+        this.velocity.y = Math.min(Math.max(-this.maxVelocity.y, this.velocity.y), this.maxVelocity.y);
+    }
+
+    /**
      * Main run function,
      * is called once per frame
      * Applies the velocity
      */
     run() {
+        this.capVelocity();
+        this.capSpeed();
         this.applyVelocity()
     }
 
